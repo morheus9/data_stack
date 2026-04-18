@@ -1,0 +1,15 @@
+defaultAirflowRepository: apache/airflow
+defaultAirflowTag: "3.2.0"
+executor: CeleryExecutor
+
+webserver:
+  replicas: 2
+
+scheduler:
+  replicas: 2
+
+workers:
+  replicas: 3
+
+config:
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"

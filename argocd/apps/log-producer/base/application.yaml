@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: log-producer
+  namespace: argocd
+spec:
+  project: data-stack
+  source:
+    repoURL: https://github.com/your-org/data_stack.git
+    targetRevision: main
+    path: apps/log-producer/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data-services
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

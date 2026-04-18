@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: data-stack
+  namespace: argocd
+spec:
+  description: Data stack project (Airflow, Kafka, producer/consumer services)
+  sourceRepos:
+    - https://github.com/apache/airflow.git
+    - https://charts.bitnami.com/bitnami
+    - https://github.com/your-org/data_stack.git
+  destinations:
+    - namespace: airflow
+      server: https://kubernetes.default.svc
+    - namespace: kafka
+      server: https://kubernetes.default.svc
+    - namespace: data-services
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

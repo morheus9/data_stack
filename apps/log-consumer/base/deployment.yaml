@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-consumer
+  template:
+    metadata:
+      labels:
+        app: log-consumer
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/your-org/log-consumer:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.kafka.svc.cluster.local:9092
+            - name: KAFKA_TOPIC
+              value: app-logs

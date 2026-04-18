@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-producer
+  template:
+    metadata:
+      labels:
+        app: log-producer
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/your-org/log-producer:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.kafka.svc.cluster.local:9092
+            - name: KAFKA_TOPIC
+              value: app-logs

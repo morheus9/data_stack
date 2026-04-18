@@ -1,0 +1,15 @@
+kraft:
+  enabled: true
+
+listeners:
+  client:
+    protocol: PLAINTEXT
+
+controller:
+  replicaCount: 1
+
+brokers:
+  replicaCount: 1
+
+image:
+  tag: 4.2.0

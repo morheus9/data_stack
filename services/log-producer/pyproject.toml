@@ -1,0 +1,15 @@
+[project]
+name = "log-producer"
+version = "0.1.0"
+description = "Kafka log producer service"
+requires-python = ">=3.12"
+dependencies = [
+  "kafka-python>=2.2.0",
+]
+
+[project.scripts]
+log-producer = "log_producer.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

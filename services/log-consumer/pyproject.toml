@@ -1,0 +1,15 @@
+[project]
+name = "log-consumer"
+version = "0.1.0"
+description = "Kafka log consumer service"
+requires-python = ">=3.12"
+dependencies = [
+  "kafka-python>=2.2.0",
+]
+
+[project.scripts]
+log-consumer = "log_consumer.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
