@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: log-producer
+  namespace: data-stack
 spec:
   replicas: 1
   selector:
@@ -12,12 +13,35 @@ spec:
       labels:
         app: log-producer
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-        - name: app
-          image: ghcr.io/your-org/log-producer:latest
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: kafka.kafka.svc.cluster.local:9092
-            - name: KAFKA_TOPIC
-              value: app-logs
+      - name: app
+        image: docker.io/morheus/log-producer:v1.0.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10001
+          runAsGroup: 10001
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka.kafka.svc.cluster.local:9092
+        - name: KAFKA_TOPIC
+          value: app-logs
