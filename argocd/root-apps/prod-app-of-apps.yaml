@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/your-org/data_stack.git
     targetRevision: main
-    path: argocd/environments/prod
+    path: argocd/applications/overlays/prod
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -17,4 +17,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+    - CreateNamespace=true

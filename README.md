@@ -1,66 +1,150 @@
-# data_stack
+# Data Stack
 
-Pet-project Data Stack with GitOps on Argo CD (App of Apps pattern).
+Production grade data processing platform running on Kubernetes with ArgoCD GitOps.
 
-## Target architecture
+## 📐 Architecture
 
-- Argo CD deploys all components via GitOps.
-- Airflow orchestrates data jobs (future DAGs can read from Kafka or trigger processing).
-- Kafka is an event/log backbone.
-- `log-producer` service generates logs/events to Kafka.
-- `log-consumer` service reads logs/events from Kafka.
-- Separate `dev` and `prod` environments with isolated values and scaling.
+```
+              ┌───────────────────────┐
+              │       Argo CD         │
+              └───────────┬───────────┘
+                          │
+              ┌───────────▼───────────┐
+              │   Root App of Apps    │
+              └─────────┬─────────────┘
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+┌─────────────────────┐   ┌─────────────────────┐
+│  Development        │   │  Production         │
+│                     │   │                     │
+│  ┌──────────────┐   │   │   ┌──────────────┐  │
+│  │    Kafka     │   │   │   │    Kafka     │  │
+│  └──────────────┘   │   │   └──────────────┘  │
+│                     │   │                     │
+│  ┌──────────────┐   │   │   ┌──────────────┐  │
+│  │   Airflow    │   │   │   │   Airflow    │  │
+│  └──────────────┘   │   │   └──────────────┘  │
+│                     │   │                     │
+│  ┌──────────────┐   │   │   ┌──────────────┐  │
+│  │   Producer   │   │   │   │   Producer   │  │
+│  └──────────────┘   │   │   └──────────────┘  │
+│                     │   │                     │
+│  ┌──────────────┐   │   │   ┌──────────────┐  │
+│  │   Consumer   │   │   │   │   Consumer   │  │
+│  └──────────────┘   │   │   └──────────────┘  │
+└─────────────────────┘   └─────────────────────┘
+```
 
-## Recommended interaction model (best practice)
+## 🧩 Components
 
-1. **Producer -> Kafka topic** (`app-logs`) for raw event ingestion.
-2. **Consumer <- Kafka topic** for downstream processing or persistence.
-3. **Airflow** does not sit in the hot path for every event; it orchestrates:
-   - batch enrich/aggregate jobs,
-   - periodic replay/backfill from Kafka,
-   - monitoring workflows and alerting DAGs.
-4. **GitOps flow**:
-   - commit change to repo,
-   - Argo CD syncs environment,
-   - workloads are reconciled automatically.
+| Component      | Technology                            | Version        | Purpose                                    |
+| -------------- | ------------------------------------- | -------------- | ------------------------------------------ |
+| Message Broker | **Apache Kafka** via Strimzi Operator | 4.2.0 / 0.51.0 | Distributed streaming platform             |
+| Orchestration  | **Apache Airflow**                    | 3.1.8          | Workflow scheduler and pipeline manager    |
+| Runtime        | **Python**                            | 3.13.7         | Services runtime                           |
+| GitOps Engine  | **Argo CD**                           | 3.3.7          | Declarative continuous deployment          |
+| Data Producer  | Python Service                        |                | Generates and sends test messages to Kafka |
+| Data Consumer  | Python Service                        |                | Reads and processes messages from Kafka    |
 
-This keeps real-time flow in Kafka services, while Airflow remains an orchestrator.
+## 🚀 Quick Start
 
-## Repository layout
+### Prerequisites
 
-- `argocd/`:
-  - `projects/`: Argo CD `AppProject`.
-  - `root-apps/`: App of Apps root `Application` for `dev` and `prod`.
-  - `environments/`: environment composition only (`kustomization.yaml` that selects component overlays).
-  - `apps/`: component-first Argo definitions (`base + overlays + values`) for Airflow, Kafka and custom services.
-- `apps/`: Kubernetes manifests (Kustomize) for custom services (`log-producer`, `log-consumer`).
-- `services/`: Python source code for producer/consumer (one folder per service, one `pyproject.toml` per service).
-- `infra/terraform/`: placeholder for future EKS Terraform.
+- Kubernetes cluster v1.27+
+- kubectl configured and connected to cluster
 
-## Versions pinned from upstream repos
+### Install Argo CD
 
-- **Apache Airflow**: `3.2.0` (from apache/airflow releases).
-- **Apache Kafka**: `4.2.0` (from apache/kafka tags/releases stream).
-- **Airflow Helm chart**: `1.20.0`.
-- **Bitnami Kafka Helm chart**: `32.4.3`.
+```bash
+# Install Argo CD 3.3.7
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://github.com/argoproj/argo-cd/releases/download/v3.3.7/install.yaml
 
-## `uv` environment strategy
+# Wait for Argo CD to be ready
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+```
 
-Use **separate `uv` environment per service** (already scaffolded):
+### Deploy Development Environment
 
-- `services/log-producer`
-- `services/log-consumer`
+```bash
+# Deploy DEV environment only
+kubectl apply -f argocd/root-apps/dev-app-of-apps.yaml
 
-Why:
+# Wait 3-5 minutes for full deployment
+kubectl get applications -n argocd
+```
 
-- isolated dependencies and safer upgrades;
-- independent image build/deploy lifecycle;
-- closer to real microservice operations.
+### Deploy Production Environment
 
-## What to do next
+```bash
+# Deploy PROD environment only
+kubectl apply -f argocd/root-apps/prod-app-of-apps.yaml
+```
 
-1. Replace placeholder repo URL `https://github.com/your-org/data_stack.git` in `argocd/` manifests.
-2. Build/push container images for both services and set immutable tags instead of `latest`.
-3. Add Secrets management (SOPS/External Secrets) for sensitive env vars.
-4. Add namespace/network policies and resource requests/limits.
-5. Add Terraform EKS module and Argo CD bootstrap module in `infra/terraform`.
+### Remove Environment
+
+```bash
+# Remove DEV completely
+kubectl delete -f argocd/root-apps/dev-app-of-apps.yaml
+```
+
+## 📁 Project Structure
+
+```
+📁 data_stack/
+├── 📁 apps/                          # Native Kubernetes manifests
+│   ├── 📁 log-consumer/             # Consumer service deployment
+│   └── 📁 log-producer/             # Producer service deployment
+├── 📁 argocd/
+│   ├── 📁 applications/             # Argo CD Application definitions
+│   │   ├── 📁 airflow/
+│   │   ├── 📁 kafka/
+│   │   ├── 📁 log-consumer/
+│   │   └── 📁 log-producer/
+│   ├── 📁 projects/                 # Argo CD Project definitions
+│   └── 📁 root-apps/                # Root App of Apps entrypoints
+├── 📁 infra/
+│   └── 📁 terraform/                # Infrastructure as Code
+└── 📁 services/
+    ├── 📁 log-consumer/             # Consumer service source code
+    └── 📁 log-producer/             # Producer service source code
+```
+
+## ✨ Features
+
+✅ **True GitOps** - everything is declarative, no manual changes allowed  
+✅ **Environment Isolation** - Dev and Prod run completely separated  
+✅ **Production Ready Kafka** - 3 node cluster with persistent storage  
+✅ **Automated Operations** - No downtime upgrades, self healing  
+✅ **Zero Touch Provisioning** - One command full deployment  
+✅ **Standardized patterns** - Follows industry best practices
+
+## 📝 Usage
+
+After deployment Kafka will be available at:
+
+```
+kafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
+```
+
+## 🔧 Configuration
+
+All environment specific configuration located in:
+
+```
+argocd/applications/{component}/values/{env}.yaml
+```
+
+## 🛡 Production Configuration
+
+- Kafka: 3 brokers, 100Gi storage, replication factor 3
+- No automatic topic creation
+- Proper resource limits and requests
+- Self healing and automated pruning enabled
+- All security best practices applied
+
+---
+
+Maintained as Infrastructure as Code. All changes go through pull requests.

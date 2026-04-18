@@ -1,0 +1,56 @@
+# Strimzi Kafka Operator Development Configuration
+watchNamespaces:
+- kafka
+
+kafka:
+  cluster:
+    enabled: true
+    name: kafka-cluster
+    replicas: 1
+    version: 4.2.0
+
+    storage:
+      type: ephemeral
+
+    resources:
+      requests:
+        cpu: "0.5"
+        memory: 2Gi
+      limits:
+        cpu: "1"
+        memory: 3Gi
+
+    listeners:
+    - name: plain
+      port: 9092
+      type: internal
+      tls: false
+
+    config:
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 1
+      min.insync.replicas: 1
+      auto.create.topics.enable: true
+
+zookeeper:
+  enabled: false
+
+entityOperator:
+  topicOperator:
+    resources:
+      requests:
+        cpu: "0.1"
+        memory: 256Mi
+      limits:
+        cpu: "0.5"
+        memory: 512Mi
+  userOperator:
+    resources:
+      requests:
+        cpu: "0.1"
+        memory: 256Mi
+      limits:
+        cpu: "0.5"
+        memory: 512Mi
