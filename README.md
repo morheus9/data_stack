@@ -108,11 +108,11 @@ kubectl delete -f argocd/root-apps/dev-app-of-apps.yaml
 
 ## ✨ Features
 
-✅ **True GitOps** - everything is declarative, no manual changes allowed  
-✅ **Environment Isolation** - Dev and Prod run completely separated  
-✅ **Production Ready Kafka** - 3 node cluster with persistent storage  
-✅ **Automated Operations** - No downtime upgrades, self healing  
-✅ **Zero Touch Provisioning** - One command full deployment  
+✅ **True GitOps** - everything is declarative, no manual changes allowed
+✅ **Environment Isolation** - Dev and Prod run completely separated
+✅ **Production Ready Kafka** - 3 node cluster with persistent storage
+✅ **Automated Operations** - No downtime upgrades, self healing
+✅ **Zero Touch Provisioning** - One command full deployment
 ✅ **Standardized patterns** - Follows industry best practices
 
 ## 📝 Usage
