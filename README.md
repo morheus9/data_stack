@@ -42,7 +42,7 @@ Production grade data processing platform running on Kubernetes with ArgoCD GitO
 | Data Producer  | Python Service                        |                | Generates and sends test messages to Kafka |
 | Data Consumer  | Python Service                        |                | Reads and processes messages from Kafka    |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
