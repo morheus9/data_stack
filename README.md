@@ -2,7 +2,7 @@
 
 Production grade data processing platform running on Kubernetes with ArgoCD GitOps.
 
-## 📐 Architecture
+## Architecture
 
 ```
               ┌───────────────────┐
@@ -31,7 +31,7 @@ Production grade data processing platform running on Kubernetes with ArgoCD GitO
 └─────────────────────┘   └─────────────────────┘
 ```
 
-## 🧩 Components
+## Components
 
 | Component      | Technology                            | Version        | Purpose                                    |
 | -------------- | ------------------------------------- | -------------- | ------------------------------------------ |
@@ -84,7 +84,7 @@ kubectl apply -f argocd/root-apps/prod-app-of-apps.yaml
 kubectl delete -f argocd/root-apps/dev-app-of-apps.yaml
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 📁 data_stack/
@@ -106,16 +106,7 @@ kubectl delete -f argocd/root-apps/dev-app-of-apps.yaml
     └── 📁 log-producer/             # Producer service source code
 ```
 
-## ✨ Features
-
-✅ **True GitOps** - everything is declarative, no manual changes allowed
-✅ **Environment Isolation** - Dev and Prod run completely separated
-✅ **Production Ready Kafka** - 3 node cluster with persistent storage
-✅ **Automated Operations** - No downtime upgrades, self healing
-✅ **Zero Touch Provisioning** - One command full deployment
-✅ **Standardized patterns** - Follows industry best practices
-
-## 📝 Usage
+## Usage
 
 After deployment Kafka will be available at:
 
@@ -123,7 +114,7 @@ After deployment Kafka will be available at:
 kafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
 ```
 
-## 🔧 Configuration
+## Configuration
 
 All environment specific configuration located in:
 
@@ -131,7 +122,7 @@ All environment specific configuration located in:
 argocd/applications/{component}/values/{env}.yaml
 ```
 
-## 🛡 Production Configuration
+## Production Configuration
 
 - Kafka: 3 brokers, 100Gi storage, replication factor 3
 - No automatic topic creation
