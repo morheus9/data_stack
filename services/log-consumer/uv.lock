@@ -1,6 +1,6 @@
 version = 1
 revision = 3
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 
 [[package]]
 name = "kafka-python"
@@ -20,4 +20,4 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "kafka-python", specifier = ">=2.2.0" }]
+requires-dist = [{ name = "kafka-python" }]

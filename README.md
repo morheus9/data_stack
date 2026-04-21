@@ -38,8 +38,8 @@ Production grade data processing platform running on Kubernetes with ArgoCD GitO
 | Message Broker | **Apache Kafka** via Strimzi Operator | 4.2.0 / 0.51.0 | Distributed streaming platform             |
 | Orchestration  | **Apache Airflow**                    | 3.1.8          | Workflow scheduler and pipeline manager    |
 | GitOps Engine  | **Argo CD**                           | 3.3.7          | Declarative continuous deployment          |
-| Data Producer  | Python Service                        | Python 3.13.7  | Generates and sends test messages to Kafka |
-| Data Consumer  | Python Service                        | Python 3.13.7  | Reads and processes messages from Kafka    |
+| Data Producer  | Python Service                        | Python 3.14.4  | Generates and sends test messages to Kafka |
+| Data Consumer  | Python Service                        | Python 3.14.4  | Reads and processes messages from Kafka    |
 
 ## Quick Start
 

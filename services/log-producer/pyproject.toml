@@ -1,9 +1,17 @@
 [project]
 name = "log-producer"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
-    "kafka-python>=2.3.1",
+    "kafka-python",
 ]
+
+[project.scripts]
+log-consumer = "log_producer.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/log_producer"]
