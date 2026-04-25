@@ -12,8 +12,7 @@ Production grade data processing platform running on Kubernetes with ArgoCD GitO
               │ Root Apps of Apps │
               └─────────┬─────────┘
             ┌───────────┴───────────┐
-            ▼                       ▼
-┌─────────────────────┐   ┌─────────────────────┐
+┌───────────▼─────────┐   ┌─────────▼───────────┐
 │  Development        │   │  Production         │
 │                     │   │                     │
 │  ┌──────────────┐   │   │   ┌──────────────┐  │
