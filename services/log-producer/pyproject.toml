@@ -7,7 +7,7 @@ dependencies = [
 ]
 
 [project.scripts]
-log-consumer = "log_producer.main:main"
+log-producer = "log_producer.main:main"
 
 [build-system]
 requires = ["hatchling"]

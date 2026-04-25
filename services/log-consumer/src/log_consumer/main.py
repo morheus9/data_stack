@@ -1,7 +1,7 @@
 import json
 import os
 
-from kafka import KafkaConsumer
+from confluent_kafka import Consumer
 
 
 def main() -> None:
@@ -9,16 +9,34 @@ def main() -> None:
     topic = os.getenv("KAFKA_TOPIC", "app-logs")
     group_id = os.getenv("KAFKA_GROUP_ID", "log-consumer-group")
 
-    consumer = KafkaConsumer(
-        topic,
-        bootstrap_servers=bootstrap_servers,
-        group_id=group_id,
-        auto_offset_reset="earliest",
-        value_deserializer=lambda value: json.loads(value.decode("utf-8")),
+    consumer = Consumer(
+        {
+            "bootstrap.servers": bootstrap_servers,
+            "group.id": group_id,
+            "auto.offset.reset": "earliest",
+        }
     )
 
-    for message in consumer:
-        print(json.dumps(message.value, ensure_ascii=True))
+    consumer.subscribe([topic])
+
+    try:
+        while True:
+            msg = consumer.poll(1.0)
+
+            if msg is None:
+                continue
+            if msg.error():
+                print(f"Consumer error: {msg.error()}")
+                continue
+
+            msg_value = msg.value()
+            if msg_value is None:
+                continue
+
+            value = json.loads(msg_value.decode("utf-8"))
+            print(json.dumps(value, ensure_ascii=True))
+    finally:
+        consumer.close()
 
 
 if __name__ == "__main__":

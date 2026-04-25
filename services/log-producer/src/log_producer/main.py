@@ -3,7 +3,7 @@ import os
 import time
 from datetime import datetime, UTC
 
-from kafka import KafkaProducer
+from confluent_kafka import Producer
 
 
 def main() -> None:
@@ -11,10 +11,15 @@ def main() -> None:
     topic = os.getenv("KAFKA_TOPIC", "app-logs")
     interval = float(os.getenv("PRODUCE_INTERVAL_SECONDS", "1.0"))
 
-    producer = KafkaProducer(
-        bootstrap_servers=bootstrap_servers,
-        value_serializer=lambda value: json.dumps(value).encode("utf-8"),
+    producer = Producer(
+        {
+            "bootstrap.servers": bootstrap_servers,
+        }
     )
+
+    def delivery_report(err, msg):
+        if err is not None:
+            print(f"Delivery failed: {err}")
 
     counter = 0
     while True:
@@ -24,8 +29,13 @@ def main() -> None:
             "message": f"Generated event {counter}",
             "timestamp": datetime.now(UTC).isoformat(),
         }
-        producer.send(topic, payload)
+
+        producer.produce(
+            topic, json.dumps(payload).encode("utf-8"), callback=delivery_report
+        )
+        producer.poll(0)
         producer.flush()
+
         counter += 1
         time.sleep(interval)
 
