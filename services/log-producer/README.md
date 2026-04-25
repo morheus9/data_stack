@@ -5,6 +5,6 @@ Kafka producer that publishes structured log events.
 ## Local run
 
 ```bash
-uv sync
+cd services/log-producer && uv sync
 uv run log-producer
 ```
