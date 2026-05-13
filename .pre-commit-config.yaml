@@ -27,7 +27,7 @@ repos:
     args: [ "--failure-threshold", "warning", "Dockerfile" ]
 
 - repo: https://github.com/mxab/pre-commit-trivy.git
-  rev: v0.17.0
+  rev: v0.18.0
   hooks:
   - id: trivyfs-docker
     args:
@@ -42,7 +42,7 @@ repos:
     - .
 
 - repo: https://github.com/bridgecrewio/checkov.git
-  rev: 3.2.524
+  rev: 3.2.528
   hooks:
   - id: checkov
     args: [ -d . ]
@@ -73,7 +73,7 @@ repos:
 # ____________________________Languages____________________________
 # Python
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.11
+  rev: v0.15.12
   hooks:
   - id: ruff-check
     args: [ --fix ]
